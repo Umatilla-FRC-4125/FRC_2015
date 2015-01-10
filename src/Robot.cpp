@@ -8,6 +8,7 @@ private:
 	void RobotInit()
 	{
 		lw = LiveWindow::GetInstance();
+		RobotDrive myDrive = new RobotDrive(0,1);
 	}
 
 	void AutonomousInit()
