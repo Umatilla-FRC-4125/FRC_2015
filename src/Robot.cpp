@@ -28,8 +28,9 @@ private:
 
 	void TeleopPeriodic()
 	{
+		if(stick->GetRawAxis(2)){
 		myDrive->Drive(stick->GetRawAxis(2),stick->GetRawAxis(0));
-
+		}else{myDrive->Drive(stick->GetRawAxis(3),stick->GetRawAxis(0));}
 	}
 
 	void TestPeriodic()
