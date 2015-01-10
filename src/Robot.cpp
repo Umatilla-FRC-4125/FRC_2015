@@ -3,12 +3,12 @@
 class Robot: public IterativeRobot
 {
 private:
-	LiveWindow *lw;
-
+	RobotDrive *myDrive;
+	Joystick *stick= new Joystick (0); // only joystick stick (0)
 	void RobotInit()
 	{
-		lw = LiveWindow::GetInstance();
-		RobotDrive myDrive = new RobotDrive(0,1);
+		//lw = LiveWindow::GetInstance();
+		myDrive = new RobotDrive(0,1);
 	}
 
 	void AutonomousInit()
@@ -28,12 +28,13 @@ private:
 
 	void TeleopPeriodic()
 	{
+		myDrive->Drive(stick->GetRawAxis(2),stick->GetRawAxis(0));
 
 	}
 
 	void TestPeriodic()
 	{
-		lw->Run();
+	//	lw->Run();
 	}
 };
 
