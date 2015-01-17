@@ -13,6 +13,8 @@ private:
 	Talon *top_right = new Talon(1);
 	Talon *bottom_left = new Talon(2);
 	Talon *bottom_right = new Talon(3);
+	Talon *Strafe_bottom=new Talon(4);
+	Talon *Strafe_top=new Talon(5);
 	//Sensors
 	Encoder *right_encoder = new Encoder(0, 1, false);
 	Encoder *left_encoder = new Encoder(2, 3, true);
@@ -60,6 +62,8 @@ private:
 		else if(stick->GetRawButton(2)){
 			shift->Set(DoubleSolenoid::kReverse);
 		}
+		Strafe_top->Set(stick->GetRawAxis(4));
+		Strafe_bottom->Set(-stick->GetRawAxis(4));
 
 	}
 
