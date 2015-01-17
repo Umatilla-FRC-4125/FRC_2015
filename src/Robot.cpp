@@ -54,16 +54,26 @@ private:
 	void TeleopPeriodic()
 	{
 		if(stick->GetRawAxis(2)){
-			myDrive->Drive(stick->GetRawAxis(2),stick->GetRawAxis(0));
-		}else{myDrive->Drive(stick->GetRawAxis(3),stick->GetRawAxis(0));}
+			myDrive->Drive(stick->GetRawAxis(2)/2,stick->GetRawAxis(0));
+		}
+		else if(stick->GetRawAxis(3)){
+			myDrive->Drive(-stick->GetRawAxis(3)/2,stick->GetRawAxis(0));
+
+		}//Brandon is Awesome!!!
+		else{
+			top_left->Set(-stick->GetRawAxis(0));
+			bottom_left->Set(-stick->GetRawAxis(0));
+			top_right->Set(-stick->GetRawAxis(0));
+			bottom_right->Set(-stick->GetRawAxis(0));
+		}
 		if(stick->GetRawButton(1)){
 			shift->Set(DoubleSolenoid::kForward);
 		}
 		else if(stick->GetRawButton(2)){
 			shift->Set(DoubleSolenoid::kReverse);
 		}
-		Strafe_top->Set(stick->GetRawAxis(4));
-		Strafe_bottom->Set(-stick->GetRawAxis(4));
+		Strafe_top->Set(stick->GetRawAxis(4)/4);
+		Strafe_bottom->Set(-stick->GetRawAxis(4)/4);
 
 	}
 
