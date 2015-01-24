@@ -17,6 +17,8 @@ private:
 	CANTalon *Strafe_bottom=new CANTalon(4);
 	CANTalon *Strafe_top=new CANTalon(5);
 	CANTalon *lift = new CANTalon(6);
+	CANTalon *spin1 = new CANTalon(7);
+	CANTalon *spin2 = new CANTalon(8);
 	//Gyros
 	Gyro *gyro1 = new Gyro(0);
 	//Sensors
@@ -98,6 +100,12 @@ private:
 
 		if(stick->GetRawAxis(5)>0.1 || stick->GetRawAxis(5)<-0.1){
 			lift->Set(stick->GetRawAxis(5));
+		}
+		if(stick->GetRawButton(3)){
+			spin1->Set(stick->GetRawButton(3))
+		}
+		if(stick->GetRawButton(4)){
+			spin2->Set(stick->GetRawButton(4))
 		}
 	}
 
