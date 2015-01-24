@@ -10,30 +10,38 @@ private:
 	DoubleSolenoid *strafe = new DoubleSolenoid(2,3);
 	//Drive stuff
 	RobotDrive *myDrive;
-	Talon *top_left = new Talon(0);
-	Talon *top_right = new Talon(1);
-	Talon *bottom_left = new Talon(2);
-	Talon *bottom_right = new Talon(3);
-	Talon *Strafe_bottom=new Talon(4);
-	Talon *Strafe_top=new Talon(5);
+	CANTalon *top_left = new CANTalon(0);
+	CANTalon *top_right = new CANTalon(1);
+	CANTalon *bottom_left = new CANTalon(2);
+	CANTalon *bottom_right = new CANTalon(3);
+	CANTalon *Strafe_bottom=new CANTalon(4);
+	CANTalon *Strafe_top=new CANTalon(5);
 	//Sensors
-	Encoder *right_encoder = new Encoder(0, 1, false);
-	Encoder *left_encoder = new Encoder(2, 3, true);
+	//Encoder *right_encoder = new Encoder(0, 1, false);
+	//Encoder *left_encoder = new Encoder(2, 3, true);
 	void RobotInit()
 	{
 		//lw = LiveWindow::GetInstance();
-		myDrive = new RobotDrive(top_left, bottom_left, top_right, bottom_right);
-		right_encoder->SetMaxPeriod(.1);
-		right_encoder->SetMinRate(10);
-		left_encoder->SetMaxPeriod(.1);
-		left_encoder->SetMinRate(10);
-		right_encoder->SetDistancePerPulse(1.0 / 360.0 * 2.0 * 3.1415 * 3);
-		right_encoder->SetReverseDirection(true);
-		right_encoder->SetSamplesToAverage(7);
-				//C = 28.26
-		left_encoder->SetDistancePerPulse(1.0 / 360.0 * 2.0 * 3.1415 * 3);
-		left_encoder->SetReverseDirection(true);
-		left_encoder->SetSamplesToAverage(7);
+		top_left->SetFeedbackDevice(CANTalon::QuadEncoder);
+		top_right->SetFeedbackDevice(CANTalon::QuadEncoder);
+		bottom_left->SetControlMode(CANSpeedController::kFollower);
+		bottom_right->SetControlMode(CANSpeedController::kFollower);
+		bottom_left->Set(0);
+		bottom_right->Set(1);
+		top_left->SetControlMode(CANSpeedController::kPercentVbus);
+		top_right->SetControlMode(CANSpeedController::kPercentVbus);
+		myDrive = new RobotDrive(top_left, top_right);
+//		right_encoder->SetMaxPeriod(.1);
+//		right_encoder->SetMinRate(10);
+//		left_encoder->SetMaxPeriod(.1);
+//		left_encoder->SetMinRate(10);
+//		right_encoder->SetDistancePerPulse(1.0 / 360.0 * 2.0 * 3.1415 * 3);
+//		right_encoder->SetReverseDirection(true);
+//		right_encoder->SetSamplesToAverage(7);
+//				//C = 28.26
+//		left_encoder->SetDistancePerPulse(1.0 / 360.0 * 2.0 * 3.1415 * 3);
+//		left_encoder->SetReverseDirection(true);
+//		left_encoder->SetSamplesToAverage(7);
 
 	}
 
@@ -60,7 +68,7 @@ private:
 		else if(stick->GetRawAxis(3)){
 			myDrive->Drive(-stick->GetRawAxis(3)/2,stick->GetRawAxis(0));
 
-		}//Brandon is Awesome!!!
+		}
 		else{
 			top_left->Set(-stick->GetRawAxis(0));
 			bottom_left->Set(-stick->GetRawAxis(0));
