@@ -16,12 +16,20 @@ private:
 	CANTalon *bottom_right = new CANTalon(3);
 	CANTalon *Strafe_bottom=new CANTalon(4);
 	CANTalon *Strafe_top=new CANTalon(5);
+	CANTalon *lift = new CANTalon(6);
+	//Gyros
+	Gyro *gyro1 = new Gyro(0);
 	//Sensors
 	//Encoder *right_encoder = new Encoder(0, 1, false);
 	//Encoder *left_encoder = new Encoder(2, 3, true);
 	void RobotInit()
 	{
 		//lw = LiveWindow::GetInstance();
+		//Gyros
+	//float angle = gyro1->GetAngle();
+	//myRobot.Drive(-1.0, -angle * Kp);
+	//Wait(0.004);
+		//Motors
 		top_left->SetFeedbackDevice(CANTalon::QuadEncoder);
 		top_right->SetFeedbackDevice(CANTalon::QuadEncoder);
 		bottom_left->SetControlMode(CANSpeedController::kFollower);
@@ -30,7 +38,9 @@ private:
 		bottom_right->Set(1);
 		top_left->SetControlMode(CANSpeedController::kPercentVbus);
 		top_right->SetControlMode(CANSpeedController::kPercentVbus);
+		//Drive
 		myDrive = new RobotDrive(top_left, top_right);
+		//Encoders
 //		right_encoder->SetMaxPeriod(.1);
 //		right_encoder->SetMinRate(10);
 //		left_encoder->SetMaxPeriod(.1);
@@ -86,6 +96,9 @@ private:
 		if(stick->GetRawButton(6)){strafe->Set(DoubleSolenoid::kForward);}
 		else if(stick->GetRawButton(7)){strafe->Set(DoubleSolenoid::kReverse);}
 
+		if(stick->GetRawAxis(5)>0.1 || stick->GetRawAxis(5)<-0.1){
+			lift->Set(stick->GetRawAxis(5));
+		}
 	}
 
 	void TestPeriodic()
