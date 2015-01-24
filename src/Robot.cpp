@@ -7,6 +7,7 @@ private:
 	Joystick *stick= new Joystick (0); // only joystick stick (0)
 	//Solenoids
 	DoubleSolenoid *shift= new DoubleSolenoid (0,1);
+	DoubleSolenoid *strafe = new DoubleSolenoid(2,3);
 	//Drive stuff
 	RobotDrive *myDrive;
 	Talon *top_left = new Talon(0);
@@ -74,6 +75,8 @@ private:
 		}
 		Strafe_top->Set(stick->GetRawAxis(4)/4);
 		Strafe_bottom->Set(-stick->GetRawAxis(4)/4);
+		if(stick->GetRawButton(6)){strafe->Set(DoubleSolenoid::kForward);}
+		else if(stick->GetRawButton(7)){strafe->Set(DoubleSolenoid::kReverse);}
 
 	}
 
