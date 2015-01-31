@@ -5,6 +5,7 @@ class Robot: public IterativeRobot
 private:
 	//Joysticks
 	Joystick *stick= new Joystick (0); // only joystick stick (0)
+	Joystick *stick2 = new Joystick (1);
 	//Solenoids
 	DoubleSolenoid *shift= new DoubleSolenoid (0,1);
 	DoubleSolenoid *strafe = new DoubleSolenoid(2,3);
@@ -18,7 +19,8 @@ private:
 	CANTalon *Strafe_top=new CANTalon(5);
 	CANTalon *lift = new CANTalon(6);
 	CANTalon *spin1 = new CANTalon(7);
-	CANTalon *spin2 = new CANTalon(8);
+	CANTalon *spin2 = new CANTalon(8)
+	CANTalon *linearSlide = new CANTalon(9);
 	//Gyros
 	Gyro *gyro1 = new Gyro(0);
 	//Sensors
@@ -102,11 +104,18 @@ private:
 			lift->Set(stick->GetRawAxis(5));
 		}
 		if(stick->GetRawButton(3)){
-			spin1->Set(stick->GetRawButton(3))
+			spin1->Set(stick->GetRawButton(3));
 		}
 		if(stick->GetRawButton(4)){
-			spin2->Set(stick->GetRawButton(4))
+			spin2->Set(stick->GetRawButton(4));
 		}
+		if(stick2->GetRawButton(4)){
+			linearSlide->Set(1)
+		}
+		else if(stick2->GetRawButton(5)){
+			linearSlide->Set(-1)
+		}
+		else{stick2->Set(0);}
 	}
 
 	void TestPeriodic()
