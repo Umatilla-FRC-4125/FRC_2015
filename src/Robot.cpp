@@ -19,8 +19,9 @@ private:
 	CANTalon *Strafe_top=new CANTalon(5);
 	CANTalon *lift = new CANTalon(6);
 	CANTalon *spin1 = new CANTalon(7);
-	CANTalon *spin2 = new CANTalon(8)
+	CANTalon *spin2 = new CANTalon(8);
 	CANTalon *linearSlide = new CANTalon(9);
+	DigitalInput *squeezeLeft = new DigitalInput(0);
 	//Gyros
 	Gyro *gyro1 = new Gyro(0);
 	//Sensors
@@ -110,12 +111,14 @@ private:
 			spin2->Set(stick->GetRawButton(4));
 		}
 		if(stick2->GetRawButton(4)){
-			linearSlide->Set(1)
+			if(!squeezeLeft->Get()){
+			linearSlide->Set(1);}
 		}
 		else if(stick2->GetRawButton(5)){
-			linearSlide->Set(-1)
+			linearSlide->Set(-1);
 		}
-		else{stick2->Set(0);}
+		else{linearSlide->Set(0);}
+		SmartDashboard::PutBoolean("Squeeze Left", squeezeLeft->Get());
 	}
 
 	void TestPeriodic()
