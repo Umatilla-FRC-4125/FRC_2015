@@ -17,16 +17,18 @@ private:
 	CANTalon *bottom_right = new CANTalon(3);
 	CANTalon *Strafe_bottom=new CANTalon(4);
 	CANTalon *Strafe_top=new CANTalon(5);
-	CANTalon *lift = new CANTalon(6);
-	CANTalon *spin1 = new CANTalon(7);
-	CANTalon *spin2 = new CANTalon(8);
-	CANTalon *linearSlide = new CANTalon(9);
-	DigitalInput *squeezeLeft = new DigitalInput(0);
+	Talon *lift = new Talon(0);
+	Talon *linearSlide = new Talon(1);
+	DigitalInput *squeezeLeft = new DigitalInput(10);
+	DigitalInput *squeezright = new DigitalInput(11);
 	//Gyros
 	Gyro *gyro1 = new Gyro(0);
 	//Sensors
-	//Encoder *right_encoder = new Encoder(0, 1, false);
-	//Encoder *left_encoder = new Encoder(2, 3, true);
+	Encoder *right_encoder = new Encoder(2, 3, false);
+	Encoder *left_encoder = new Encoder(0, 1, true);
+	Encoder *strafe_front_enc = new Encoder(6,7,false);
+	Encoder *strafe_back_enc = new Encoder(8,9,true);
+	Encoder *elev_enc = new Encoder(4,5,false);
 	void RobotInit()
 	{
 		//lw = LiveWindow::GetInstance();
@@ -35,60 +37,95 @@ private:
 	//myRobot.Drive(-1.0, -angle * Kp);
 	//Wait(0.004);
 		//Motors
-		top_left->SetFeedbackDevice(CANTalon::QuadEncoder);
-		top_right->SetFeedbackDevice(CANTalon::QuadEncoder);
-		bottom_left->SetControlMode(CANSpeedController::kFollower);
-		bottom_right->SetControlMode(CANSpeedController::kFollower);
-		bottom_left->Set(0);
-		bottom_right->Set(1);
-		top_left->SetControlMode(CANSpeedController::kPercentVbus);
-		top_right->SetControlMode(CANSpeedController::kPercentVbus);
-		//Drive
-		myDrive = new RobotDrive(top_left, top_right);
-		//Encoders
-//		right_encoder->SetMaxPeriod(.1);
-//		right_encoder->SetMinRate(10);
-//		left_encoder->SetMaxPeriod(.1);
-//		left_encoder->SetMinRate(10);
-//		right_encoder->SetDistancePerPulse(1.0 / 360.0 * 2.0 * 3.1415 * 3);
-//		right_encoder->SetReverseDirection(true);
-//		right_encoder->SetSamplesToAverage(7);
-//				//C = 28.26
-//		left_encoder->SetDistancePerPulse(1.0 / 360.0 * 2.0 * 3.1415 * 3);
-//		left_encoder->SetReverseDirection(true);
-//		left_encoder->SetSamplesToAverage(7);
+		//top_left->SetFeedbackDevice(CANTalon::QuadEncoder);
+		//top_right->SetFeedbackDevice(CANTalon::QuadEncoder);
 
+
+
+		//Drive
+		myDrive = new RobotDrive(top_left,bottom_left, top_right,bottom_right);
+		myDrive->SetExpiration(1000);
+		//Encoders
+		//C = 28.26
+		right_encoder->SetMaxPeriod(.1);
+		right_encoder->SetMinRate(10);
+		left_encoder->SetMaxPeriod(.1);
+		left_encoder->SetMinRate(10);
+		right_encoder->SetDistancePerPulse(.016);
+		right_encoder->SetReverseDirection(true);
+		right_encoder->SetSamplesToAverage(7);
+		//1/4 of the rest of them
+		left_encoder->SetDistancePerPulse(.016);
+		left_encoder->SetReverseDirection(false);
+		left_encoder->SetSamplesToAverage(7);
+		strafe_back_enc->SetMaxPeriod(.1);
+		strafe_back_enc->SetMinRate(10);
+		strafe_front_enc->SetMaxPeriod(.1);
+		strafe_front_enc->SetMinRate(10);
+		strafe_front_enc->SetDistancePerPulse(.016);
+		strafe_front_enc->SetReverseDirection(true);
+		strafe_front_enc->SetSamplesToAverage(7);
+		strafe_back_enc->SetDistancePerPulse(.016);
+		strafe_back_enc->SetReverseDirection(true);
+		strafe_back_enc->SetSamplesToAverage(7);
+		elev_enc->SetMaxPeriod(.1);
+		elev_enc->SetMinRate(10);
+		elev_enc->SetDistancePerPulse(.016);
+		elev_enc->SetReverseDirection(true);
+		elev_enc->SetSamplesToAverage(7);
 	}
 
 	void AutonomousInit()
 	{
+		elev_enc->Reset();
+		strafe_back_enc->Reset();
+		strafe_front_enc->Reset();
+		right_encoder->Reset();
+		left_encoder->Reset();
 
 	}
 
 	void AutonomousPeriodic()
 	{
+		strafe->Set(DoubleSolenoid::kForward);
+		if(right_encoder->GetDistance()< 3.8){
+			myDrive->SetLeftRightMotorOutputs(-.4,.4);
 
+		}
+		else
+		{
+			myDrive->SetLeftRightMotorOutputs(0, 0);
+		}
+		SmartDashboard::PutBoolean("Squeeze Left", squeezeLeft->Get());
+		SmartDashboard::PutBoolean("Squeeze Right", squeezright->Get());
+		SmartDashboard::PutNumber("Left Encoder", left_encoder->GetDistance());
+		SmartDashboard::PutNumber("Right Encoder", right_encoder->GetDistance());
+		SmartDashboard::PutNumber("Top Strafe Enc", strafe_front_enc->GetDistance());
+		SmartDashboard::PutNumber("Bottom Strafe Enc", strafe_back_enc->GetDistance());
+		SmartDashboard::PutNumber("Elevator Enc", elev_enc->GetDistance());
 	}
 
 	void TeleopInit()
 	{
-
+		elev_enc->Reset();
+		strafe_back_enc->Reset();
+		strafe_front_enc->Reset();
+		right_encoder->Reset();
+		left_encoder->Reset();
 	}
 
 	void TeleopPeriodic()
 	{
-		if(stick->GetRawAxis(2)){
-			myDrive->Drive(stick->GetRawAxis(2)/2,stick->GetRawAxis(0));
-		}
-		else if(stick->GetRawAxis(3)){
-			myDrive->Drive(-stick->GetRawAxis(3)/2,stick->GetRawAxis(0));
+		if(stick->GetRawAxis(2)>.1 ){
+			myDrive->Drive(stick->GetRawAxis(3)-stick->GetRawAxis(2),stick->GetRawAxis(0));
 
 		}
+		else if(stick->GetRawAxis(3)>.10){
+			myDrive->Drive(stick->GetRawAxis(3)-stick->GetRawAxis(2),stick->GetRawAxis(0));
+//
+		}
 		else{
-			top_left->Set(-stick->GetRawAxis(0));
-			bottom_left->Set(-stick->GetRawAxis(0));
-			top_right->Set(-stick->GetRawAxis(0));
-			bottom_right->Set(-stick->GetRawAxis(0));
+			myDrive->SetLeftRightMotorOutputs(stick->GetRawAxis(0),-stick->GetRawAxis(0));
 		}
 		if(stick->GetRawButton(1)){
 			shift->Set(DoubleSolenoid::kForward);
@@ -96,33 +133,41 @@ private:
 		else if(stick->GetRawButton(2)){
 			shift->Set(DoubleSolenoid::kReverse);
 		}
-		Strafe_top->Set(stick->GetRawAxis(4)/4);
-		Strafe_bottom->Set(-stick->GetRawAxis(4)/4);
+		Strafe_top->Set(stick->GetRawAxis(4)*.75);
+		Strafe_bottom->Set(-stick->GetRawAxis(4)*.75);
 		if(stick->GetRawButton(6)){strafe->Set(DoubleSolenoid::kForward);}
-		else if(stick->GetRawButton(7)){strafe->Set(DoubleSolenoid::kReverse);}
+		else if(stick->GetRawButton(5)){strafe->Set(DoubleSolenoid::kReverse);}
 
-		if(stick->GetRawAxis(5)>0.1 || stick->GetRawAxis(5)<-0.1){
-			lift->Set(stick->GetRawAxis(5));
+		if(stick2->GetRawButton(1)){
+			lift->Set(.5);
 		}
-		if(stick->GetRawButton(3)){
-			spin1->Set(stick->GetRawButton(3));
+		else if(stick2->GetRawButton(2)){
+			lift->Set(-.5);
 		}
-		if(stick->GetRawButton(4)){
-			spin2->Set(stick->GetRawButton(4));
-		}
+		else {lift->Set(0);}
 		if(stick2->GetRawButton(4)){
-			if(!squeezeLeft->Get()){
-			linearSlide->Set(1);}
+			if(squeezeLeft->Get()){
+				linearSlide->Set(.5);}
+			else {linearSlide->Set(0);}
 		}
 		else if(stick2->GetRawButton(5)){
-			linearSlide->Set(-1);
+			if(squeezright->Get()){
+				linearSlide->Set(-.5);}
+			else{linearSlide->Set(0);}
 		}
 		else{linearSlide->Set(0);}
 		SmartDashboard::PutBoolean("Squeeze Left", squeezeLeft->Get());
+		SmartDashboard::PutBoolean("Squeeze Right", squeezright->Get());
+		SmartDashboard::PutNumber("Left Encoder", left_encoder->GetDistance());
+		SmartDashboard::PutNumber("Right Encoder", right_encoder->GetDistance());
+		SmartDashboard::PutNumber("Top Strafe Enc", strafe_front_enc->GetDistance());
+		SmartDashboard::PutNumber("Bottom Strafe Enc", strafe_back_enc->GetDistance());
+		SmartDashboard::PutNumber("Elevator Enc", elev_enc->GetDistance());
+
 	}
 
-	void TestPeriodic()
-	{
+	void TestPeriodic(){
+
 	//	lw->Run();
 	}
 };
